@@ -44,8 +44,8 @@ class BackBone(nn.Module):
         # 输出尺寸: 10 / 2 = 5
         self.pool2 = nn.AvgPool2d(kernel_size=2, stride=2)
 
-        # 激活函数: Sigmoid (LeNet-5 原版用 Sigmoid)
-        self.activate = nn.Sigmoid()
+        # 激活函数: ReLU (比 Sigmoid 更快更好, 准确率更高)
+        self.activate = nn.ReLU()
 
     def forward(self, x):
         """

@@ -27,8 +27,8 @@ class Head(nn.Module):
         # 输入: 84, 输出: num_classes (10)
         self.fc3 = nn.Linear(in_features=84, out_features=num_classes)
 
-        # 激活函数: Sigmoid (LeNet-5 原版用 Sigmoid)
-        self.activate = nn.Sigmoid()
+        # 激活函数: ReLU (比 Sigmoid 更快更好, 准确率更高)
+        self.activate = nn.ReLU()
 
     def forward(self, x):
         """

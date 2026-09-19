@@ -1,4 +1,4 @@
-import torch
+﻿import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
@@ -9,7 +9,7 @@ from model.model import LeNet5
 
 
 def get_device():
-    """获取训练设备: 优先 GPU, 没有就用 CPU"""
+    """鑾峰彇璁粌璁惧: 浼樺厛 GPU, 娌℃湁灏辩敤 CPU"""
     if torch.cuda.is_available():
         return torch.device("cuda")
     return torch.device("cpu")
@@ -17,27 +17,22 @@ def get_device():
 
 def get_dataloaders(data_root="./data", batch_size=64, val_ratio=0.1):
     """
-    加载 MNIST 数据集
-    转换: 缩放到 32x32 (LeNet-5 输入要求), 归一化
-    """
+    鍔犺浇 MNIST 鏁版嵁闆?    杞崲: 缂╂斁鍒?32x32 (LeNet-5 杈撳叆瑕佹眰), 褰掍竴鍖?    """
     transform = transforms.Compose([
         transforms.Resize((32, 32)),
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
 
-    # 训练集 + 验证集
-    full_train = datasets.MNIST(
+    # 璁粌闆?+ 楠岃瘉闆?    full_train = datasets.MNIST(
         root=data_root, train=True, download=True, transform=transform
     )
 
-    # 划分训练集和验证集
-    val_size = int(len(full_train) * val_ratio)
+    # 鍒掑垎璁粌闆嗗拰楠岃瘉闆?    val_size = int(len(full_train) * val_ratio)
     train_size = len(full_train) - val_size
     train_set, val_set = random_split(full_train, [train_size, val_size])
 
-    # 测试集
-    test_set = datasets.MNIST(
+    # 娴嬭瘯闆?    test_set = datasets.MNIST(
         root=data_root, train=False, download=True, transform=transform
     )
 
@@ -50,7 +45,7 @@ def get_dataloaders(data_root="./data", batch_size=64, val_ratio=0.1):
 
 
 def train_one_epoch(model, loader, criterion, optimizer, device):
-    """训练一个 epoch"""
+    """璁粌涓€涓?epoch"""
     model.train()
     total_loss = 0.0
     correct = 0
@@ -59,16 +54,16 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
     for images, labels in loader:
         images, labels = images.to(device), labels.to(device)
 
-        # 前向传播
+        # 鍓嶅悜浼犳挱
         outputs = model(images)
         loss = criterion(outputs, labels)
 
-        # 反向传播 + 更新
+        # 鍙嶅悜浼犳挱 + 鏇存柊
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        # 统计
+        # 缁熻
         total_loss += loss.item() * images.size(0)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
@@ -80,7 +75,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
 
 
 def evaluate(model, loader, criterion, device):
-    """评估模型"""
+    """璇勪及妯″瀷"""
     model.eval()
     total_loss = 0.0
     correct = 0
@@ -103,14 +98,14 @@ def evaluate(model, loader, criterion, device):
 
 
 def plot_curves(train_losses, val_losses, train_accs, val_accs, save_path="runs/training_curves.png"):
-    """绘制 loss 和 accuracy 曲线"""
+    """缁樺埗 loss 鍜?accuracy 鏇茬嚎"""
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
     epochs = range(1, len(train_losses) + 1)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
 
-    # Loss 曲线
+    # Loss 鏇茬嚎
     ax1.plot(epochs, train_losses, 'b-', label='Train Loss')
     ax1.plot(epochs, val_losses, 'r-', label='Val Loss')
     ax1.set_xlabel('Epoch')
@@ -119,7 +114,7 @@ def plot_curves(train_losses, val_losses, train_accs, val_accs, save_path="runs/
     ax1.legend()
     ax1.grid(True, alpha=0.3)
 
-    # Accuracy 曲线
+    # Accuracy 鏇茬嚎
     ax2.plot(epochs, train_accs, 'b-', label='Train Acc')
     ax2.plot(epochs, val_accs, 'r-', label='Val Acc')
     ax2.set_xlabel('Epoch')
@@ -131,79 +126,85 @@ def plot_curves(train_losses, val_losses, train_accs, val_accs, save_path="runs/
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
     plt.close()
-    print(f"训练曲线已保存: {save_path}")
+    print(f"璁粌鏇茬嚎宸蹭繚瀛? {save_path}")
 
 
 def main():
-    # 超参数
-    num_epochs = 10
+    # 瓒呭弬鏁?    num_epochs = 20
     batch_size = 64
     learning_rate = 0.001
 
-    # 设备
+    # 璁惧
     device = get_device()
-    print(f"使用设备: {device}")
+    print(f"浣跨敤璁惧: {device}")
 
-    # 数据
+    # 鏁版嵁
     train_loader, val_loader, test_loader = get_dataloaders(batch_size=batch_size)
 
-    # 模型
+    # 妯″瀷
     model = LeNet5(num_classes=10).to(device)
-    print(f"模型结构:\n{model}")
+    print(f"妯″瀷缁撴瀯:\n{model}")
 
-    # 损失函数 + 优化器
-    criterion = nn.CrossEntropyLoss()
+    # 鎹熷け鍑芥暟 + 浼樺寲鍣?    criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-    # 记录训练过程
+    # 璁板綍璁粌杩囩▼
     train_losses = []
     val_losses = []
     train_accs = []
     val_accs = []
     best_val_acc = 0.0
 
-    # 创建保存目录
+    # 鍒涘缓淇濆瓨鐩綍
     os.makedirs("runs", exist_ok=True)
 
-    # 训练循环
+    # 璁粌寰幆
     for epoch in range(1, num_epochs + 1):
         print(f"\nEpoch {epoch}/{num_epochs}")
         print("-" * 50)
 
-        # 训练
+        # 璁粌
         train_loss, train_acc = train_one_epoch(model, train_loader, criterion, optimizer, device)
         print(f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
 
-        # 验证
+        # 楠岃瘉
         val_loss, val_acc = evaluate(model, val_loader, criterion, device)
         print(f"Val Loss:   {val_loss:.4f} | Val Acc:   {val_acc:.2f}%")
 
-        # 记录
+        # 璁板綍
         train_losses.append(train_loss)
         val_losses.append(val_loss)
         train_accs.append(train_acc)
         val_accs.append(val_acc)
 
-        # 保存最佳模型
-        if val_acc > best_val_acc:
+        # 淇濆瓨鏈€浣虫ā鍨?        if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), "runs/best.pt")
-            print(f"✓ 保存最佳模型 (Val Acc: {best_val_acc:.2f}%)")
+            print(f"鉁?淇濆瓨鏈€浣虫ā鍨?(Val Acc: {best_val_acc:.2f}%)")
 
-    # 保存最后一轮模型
-    torch.save(model.state_dict(), "runs/last.pt")
-    print(f"\n✓ 保存最后一轮模型: runs/last.pt")
+    # 淇濆瓨鏈€鍚庝竴杞ā鍨?    torch.save(model.state_dict(), "runs/last.pt")
+    print(f"\n鉁?淇濆瓨鏈€鍚庝竴杞ā鍨? runs/last.pt")
 
-    # 绘制训练曲线
+    # 缁樺埗璁粌鏇茬嚎
     plot_curves(train_losses, val_losses, train_accs, val_accs)
 
-    # 测试集评估
-    print("\n" + "=" * 50)
-    print("测试集评估:")
+    # 娴嬭瘯闆嗚瘎浼?    print("\n" + "=" * 50)
+    print("娴嬭瘯闆嗚瘎浼?")
     test_loss, test_acc = evaluate(model, test_loader, criterion, device)
     print(f"Test Loss: {test_loss:.4f} | Test Acc: {test_acc:.2f}%")
-    print(f"最佳验证准确率: {best_val_acc:.2f}%")
+    print(f"鏈€浣抽獙璇佸噯纭巼: {best_val_acc:.2f}%")
 
 
 if __name__ == "__main__":
     main()
+
+
+
+import torch
+
+# 鍔犺浇妯″瀷鏉冮噸
+state_dict = torch.load("runs/best.pt")
+
+# 鎵撳嵃鎵€鏈夊眰鐨勫悕瀛楀拰褰㈢姸
+for name, param in state_dict.items():
+    print(f"{name}: {param.shape}")
