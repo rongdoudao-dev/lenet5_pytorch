@@ -39,11 +39,11 @@ class Head(nn.Module):
         # 展平: [batch, 16, 5, 5] -> [batch, 400]
         x = self.flatten(x)
 
-        # C5 + Sigmoid
+        # C5 + ReLU
         x = self.fc1(x)
         x = self.activate(x)
 
-        # F6 + Sigmoid
+        # F6 + ReLU
         x = self.fc2(x)
         x = self.activate(x)
 

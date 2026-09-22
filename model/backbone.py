@@ -23,10 +23,10 @@ class BackBone(nn.Module):
             padding=0
         )
 
-        # S2: 平均池化层
+        # S2: 最大池化层 (老师代码用 MaxPool, 效果更好)
         # 卷积核 2x2, 步长 2
         # 输出尺寸: 28 / 2 = 14
-        self.pool1 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
 
         # C3: 卷积层 2
         # 输入: 6通道, 输出: 16通道, 卷积核 5x5, 步长 1, padding 0
@@ -39,10 +39,10 @@ class BackBone(nn.Module):
             padding=0
         )
 
-        # S4: 平均池化层
+        # S4: 最大池化层 (老师代码用 MaxPool, 效果更好)
         # 卷积核 2x2, 步长 2
         # 输出尺寸: 10 / 2 = 5
-        self.pool2 = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
 
         # 激活函数: ReLU (比 Sigmoid 更快更好, 准确率更高)
         self.activate = nn.ReLU()
@@ -53,12 +53,12 @@ class BackBone(nn.Module):
         :param x: 输入图像 [batch_size, 1, 32, 32]
         :return: 特征图 [batch_size, 16, 5, 5]
         """
-        # C1 + Sigmoid + S2
+        # C1 + ReLU + S2
         x = self.conv1(x)
         x = self.activate(x)
         x = self.pool1(x)
 
-        # C3 + Sigmoid + S4
+        # C3 + ReLU + S4
         x = self.conv2(x)
         x = self.activate(x)
         x = self.pool2(x)
